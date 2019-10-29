@@ -2,7 +2,7 @@
 %%% OFDMA with static allocation
 
 %% Define Numerology
-Numerology = 1;
+Numerology = 3;
 
 if (Numerology == 1)
      N = 6336;
