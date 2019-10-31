@@ -2,7 +2,7 @@
 %%% OFDMA with static allocation
 
 %% Define Numerology
-Numerology = 1;
+Numerology = 3;
 
 if (Numerology == 1)
      N = 6336;
@@ -17,13 +17,13 @@ end
 %%
 TargetSer = 1e-3;                           %% SER Alvo
 SNR = 6:2:30;                               %% XXX
-%N = 6336;                                   %% Numero de Subportadoras
+%N = 6336;                                  %% Numero de Subportadoras
 b = zeros(1,N);                             %% Vetor de Bits das portadoras / Numerologia 3
 Total_bits = zeros(1,length(SNR));          %% Total de bits em um simbolo
 bits_per_rb = zeros(1,length(SNR));         %% qtd media de Bits por RB 
-quantizar = 'yes';                          %%
+quantizar = 'yes';                          %% 
 RB = 132;                                   %% qtd de RB
-%sc_per_rb = 48;                             %% SubCarriers per RB, depends numerology    
+%sc_per_rb = 48;                            %% SubCarriers per RB, depends numerology    
 nusers = 3;
 %% SNR gap para constelação M-QAM:
 Gamma=(1/3)*qfuncinv(TargetSer/4)^2; % Gap to channel capacity M-QAM
@@ -50,11 +50,10 @@ for i=1:length(SNR)
     i
     j=0;
     while j<num_itr 
-    
+        
+        % Gera o canal randomico para cada user
         for user=1:nusers
-            %H = ones(1,N);%% H ideal
             h = filter(chan_EVA, impulse)';
-            %H1 = fft(h1,N/3);
             Hf = fft(h,N);
             % Calcula Resposta em frequencia média para os 132 RB's
             H(user,:) = rb_h_media(Hf, sc_per_rb);
@@ -65,10 +64,10 @@ for i=1:length(SNR)
         Pu = P/nusers;
         
         for user=1:nusers
-            mask(user,:) = (abs(H(user,:))== max(abs(H)));
+            mask(user,:) = ( abs(H(user,:))== max(abs(H)) );
             [~,~, capacity(user,:) ] = fcn_waterfilling(Pu, P/(SNRLIN*RB), Gamma, H(user,:), mask(user,:) );
         end
-%         sum(mask(:))
+%       sum(mask(:))
 
    
         b = sum(capacity);
