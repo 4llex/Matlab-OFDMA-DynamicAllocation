@@ -49,8 +49,9 @@ mask_priority = ones(nusers,RB);
 priority_user = zeros(1,nusers);
 bmax = zeros(1,nusers);
 %real_capacity = zeros(nusers,RB);
+%test = [];
 
-num_itr = 200;
+num_itr = 500;
 for i=1:length(SNR)
     i
     j=0;
@@ -89,6 +90,7 @@ for i=1:length(SNR)
         
         priority_user;
         alloc_vec = zeros(1, RB);
+        alloc_user = zeros(1, RB);
         real_capacity = zeros(nusers,RB);
         
         while (sum(bmin<=0) ~= nusers)
@@ -102,12 +104,30 @@ for i=1:length(SNR)
                            real_capacity(priority_user(ii),index) = value;
                            capacity(:,index) = -1;
                            alloc_vec(index) = 1;
+                           alloc_user(index) = ii;
+                           %test = [test,index];
                            bmin(priority_user(ii)) = bmin(priority_user(ii)) - value;
                         end
                     end % end do for
                 end
         end % end while 
         
+        % Verifica se há portadoras sobressalentes e aloca para o user com
+        % maior vazão media
+        if (sum(alloc_vec)~=132)
+            nova_vazao = alloc_vec + capacity;
+            for user=1:nusers
+                bmax(user) = sum(nova_vazao(user,:));
+            end
+            
+            [~,idx_usr] = max(bmax); % obtem o index do User com maior vazão
+            get_subcarriers_index = find(~(capacity(idx_usr,:) < 0)); % obtem o index das subcarriers sobressalentes do user com maior vazao
+            
+            for iii=1:length(get_subcarriers_index)
+                real_capacity(idx_usr,get_subcarriers_index(iii)) = capacity(idx_usr,get_subcarriers_index(iii));
+            end
+            
+        end
    
         %b = sum(capacity);
         b = sum(real_capacity);
