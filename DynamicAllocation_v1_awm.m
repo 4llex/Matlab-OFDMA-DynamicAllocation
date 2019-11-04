@@ -21,7 +21,7 @@ SNR = 6:2:30;                               %% XXX
 b = zeros(1,N);                             %% Vetor de Bits das portadoras / Numerologia 3
 Total_bits = zeros(1,length(SNR));          %% Total de bits em um simbolo
 bits_per_rb = zeros(1,length(SNR));         %% qtd media de Bits por RB 
-quantizar = 'yes';                          %% 
+%quantizar = 'yes';                          %% 
 RB = 132;                                   %% qtd de RB
 %sc_per_rb = 48;                            %% SubCarriers per RB, depends numerology    
 nusers = 3;
@@ -44,12 +44,21 @@ H    = ones(nusers,RB);
 mask = zeros(nusers,RB);
 capacity = zeros(nusers,RB);
 
+% new variable for AWM
+mask_priority = ones(nusers,RB);
+priority_user = zeros(1,nusers);
+bmax = zeros(1,nusers);
+%real_capacity = zeros(nusers,RB);
 
 num_itr = 200;
 for i=1:length(SNR)
     i
     j=0;
+    
     while j<num_itr 
+        
+        %bmin = [100, 100, 100];
+        bmin = [6, 6, 6];
         
         % Gera o canal randomico para cada user
         for user=1:nusers
@@ -63,34 +72,46 @@ for i=1:length(SNR)
         P  = 20;
         Pu = P/nusers;
         
+        % Distribuição de potencia utilizando WF
         for user=1:nusers
-            mask(user,:) = ( abs(H(user,:))== max(abs(H)) );
-            [~,~, capacity(user,:) ] = fcn_waterfilling(Pu, P/(SNRLIN*RB), Gamma, H(user,:), mask(user,:) );
+            [~,~, capacity(user,:) ] = fcn_waterfilling(Pu, P/(SNRLIN*RB), Gamma, H(user,:), mask_priority(user,:) );
+            bmax(user) = sum(capacity(user,:));
+            capacity(user,:) = quantization(capacity(user,:));
         end
-%       sum(mask(:))
-
+        
+        % Gettting priority users
+        for user=1:nusers
+            [~,index] = max(bmax);
+            priority_user(user) = index;
+            bmax(index) = -1;
+        end
+        
+        
+        priority_user;
+        alloc_vec = zeros(1, RB);
+        real_capacity = zeros(nusers,RB);
+        
+        while (sum(bmin<=0) ~= nusers)
+            
+                if(sum(alloc_vec)==132)
+                    break;
+                else
+                    for ii=1:nusers
+                        if (bmin(priority_user(ii))>0)
+                           [value,index] = max(capacity(priority_user(ii),:));
+                           real_capacity(priority_user(ii),index) = value;
+                           capacity(:,index) = -1;
+                           alloc_vec(index) = 1;
+                           bmin(priority_user(ii)) = bmin(priority_user(ii)) - value;
+                        end
+                    end % end do for
+                end
+        end % end while 
+        
    
-        b = sum(capacity);
+        %b = sum(capacity);
+        b = sum(real_capacity);
 
-        % Quantização
-        if strcmp(quantizar,'yes')
-            b(b<2) = 0;
-            b((b>2)&(b<4)) = 2;
-            b((b>4)&(b<6)) = 4;
-            b((b>6)&(b<8)) = 6;
-            b(b>8) = 8;
-        end
-
-%         figure(2);
-%         cla;
-%         plot(subPower1); hold on; plot(subPower2); plot(subPower3);
-%         drawnow();
-
-%         figure(3);
-%         cla;
-%         plot(abs(H1)); hold on; plot(abs(H2)); plot(abs(H3));
-%         drawnow();
-%         pause(1);
         
         Total_bits(i) = Total_bits(i) + sum(b);
         %bm(j) = b;

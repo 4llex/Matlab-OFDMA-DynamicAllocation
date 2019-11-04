@@ -24,4 +24,4 @@ while(sum(subPower<0))
 end
 %subAlloc=AllowedSubCarriers;
 %subCapacity = log2(1 + (subPower.*(abs(H).^2))/(Gamma*SigmaSqr));
-subCapacity = floor(log2(1 + (subPower.*(abs(H).^2))/(Gamma*SigmaSqr)));  % Modulation constraint
+subCapacity = log2(1 + (subPower.*(abs(H).^2))/(Gamma*SigmaSqr));  % Modulation constraint
