@@ -1,6 +1,10 @@
 %%% Simulação de alocação estatica de usuarios em simbolo OFDM
 %%% OFDMA with static allocation
 
+%% Water Filing Modificado para MOM, maxima ondem de modulação: 
+%  cada subportadora sobressalente é alocada para o usuario que pode
+%  atingir a maior quantidade de bits!
+
 %% Define Numerology
 Numerology = 3;
 

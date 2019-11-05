@@ -1,5 +1,10 @@
-%%% Simulação de alocação estatica de usuarios em simbolo OFDM
+%%% Simulação de alocação dinamica de usuarios em simbolo OFDM
 %%% OFDMA with static allocation
+
+%% Water Filing Modificado para MTM, maxima taxa media, maxima vazão: 
+%  As subportadoras sobressalentes são alocadas para o usuario que pode
+%  atingir a maior vazão média!
+
 
 %% Define Numerology
 Numerology = 3;

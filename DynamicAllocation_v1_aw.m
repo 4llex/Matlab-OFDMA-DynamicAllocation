@@ -1,6 +1,8 @@
 %%% Simulação de alocação estatica de usuarios em simbolo OFDM
 %%% OFDMA with static allocation
 
+%% Water Filing para Maxima vazao do sistema
+
 %% Define Numerology
 Numerology = 3;
 
