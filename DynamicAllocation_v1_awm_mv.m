@@ -122,7 +122,7 @@ for i=1:length(SNR)
         if (sum(alloc_vec)~=132)
             nova_vazao = alloc_vec + capacity;
             for user=1:nusers
-                bmax(user) = sum(nova_vazao(user,:));
+                bmax(user) = sum(nova_vazao(user,:)); % calcula a vazao de cada user nas SC sobressalentes!
             end
             
             [~,idx_usr] = max(bmax); % obtem o index do User com maior vazão

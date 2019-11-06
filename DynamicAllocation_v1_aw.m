@@ -66,7 +66,7 @@ for i=1:length(SNR)
         Pu = P/nusers;
         
         for user=1:nusers
-            mask(user,:) = ( abs(H(user,:))== max(abs(H)) );
+            mask(user,:) = ( abs(H(user,:))== max(abs(H)) ); % mask é 1 onde o user pode transmitir melhor
             [~,~, capacity(user,:) ] = fcn_waterfilling(Pu, P/(SNRLIN*RB), Gamma, H(user,:), mask(user,:) );
         end
 %       sum(mask(:))

@@ -20,7 +20,7 @@ end
 
 %%
 TargetSer = 1e-3;                           %% SER Alvo
-SNR = 6:2:30;                               %% XXX
+SNR = 8:2:30;                               %% XXX
 %N = 6336;                                  %% Numero de Subportadoras
 b = zeros(1,N);                             %% Vetor de Bits das portadoras / Numerologia 3
 Total_bits = zeros(1,length(SNR));          %% Total de bits em um simbolo
@@ -45,17 +45,17 @@ impulse= [1; zeros(N - 1,1)];
 
 
 H    = ones(nusers,RB);
-mask = zeros(nusers,RB);
+%mask = zeros(nusers,RB);
 capacity = zeros(nusers,RB);
 
 % new variable for AWM
-mask_priority = ones(nusers,RB);
+mask = ones(nusers,RB); % mask para WF em todas as portadoras, tudo em '1'
 priority_user = zeros(1,nusers);
 bmax = zeros(1,nusers);
 %real_capacity = zeros(nusers,RB);
 %test = [];
 
-num_itr = 500;
+num_itr = 5000;
 for i=1:length(SNR)
     i
     j=0;
@@ -63,7 +63,7 @@ for i=1:length(SNR)
     while j<num_itr 
         
         %bmin = [100, 100, 100];
-        bmin = [6, 6, 6];
+        bmin = [50, 50, 50];
         
         % Gera o canal randomico para cada user
         for user=1:nusers
@@ -77,9 +77,10 @@ for i=1:length(SNR)
         P  = 20;
         Pu = P/nusers;
         
-        % Distribuição de potencia utilizando WF
+        % Distribuição de potencia utilizando WF, para cada user em todo o
+        % espectro OFDM
         for user=1:nusers
-            [~,~, capacity(user,:) ] = fcn_waterfilling(Pu, P/(SNRLIN*RB), Gamma, H(user,:), mask_priority(user,:) );
+            [~,~, capacity(user,:) ] = fcn_waterfilling(Pu, P/(SNRLIN*RB), Gamma, H(user,:), mask(user,:) ); % a mask é tudo '1'!
             bmax(user) = sum(capacity(user,:));
             capacity(user,:) = quantization(capacity(user,:));
         end
@@ -105,7 +106,7 @@ for i=1:length(SNR)
                     for ii=1:nusers
                         if (bmin(priority_user(ii))>0)
                            [value,index] = max(capacity(priority_user(ii),:));
-                           real_capacity(priority_user(ii),index) = value;
+                           real_capacity(priority_user(ii),index) = value; % value é ordem de modulação do um RB!
                            capacity(:,index) = -1;
                            alloc_vec(index) = 1;
                            alloc_user(index) = ii;
@@ -116,19 +117,21 @@ for i=1:length(SNR)
                 end
         end % end while 
         
-        % Verifica se há portadoras sobressalentes e aloca para o user com
-        % maior vazão media
+        % Verifica se há portadoras sobressalentes e aloca cada uma para o 
+        % usuario que pode transmitir a maior taxa de bits!
+        mask2 = zeros(nusers,RB); % mask para melhor user por portadora
         if (sum(alloc_vec)~=132)
-            nova_vazao = alloc_vec + capacity;
+            
+            idx_sobressalentes = find(~alloc_vec); % retorna index das sc sobressalentes!
+            %x= find(alloc_vec);
             for user=1:nusers
-                bmax(user) = sum(nova_vazao(user,:));
+                mask2(user,idx_sobressalentes) = ( abs(H(user,idx_sobressalentes))== max(abs(H(:,idx_sobressalentes))) ); % mask é 1 onde o user pode transmitir melhor
             end
+            %y = find(~(sum(mask2)));
             
-            [~,idx_usr] = max(bmax); % obtem o index do User com maior vazão
-            get_subcarriers_index = find(~(capacity(idx_usr,:) < 0)); % obtem o index das subcarriers sobressalentes do user com maior vazao
-            
-            for iii=1:length(get_subcarriers_index)
-                real_capacity(idx_usr,get_subcarriers_index(iii)) = capacity(idx_usr,get_subcarriers_index(iii));
+            for user=1:nusers % Obtem idx da maskara de cada user e joga valor de capacidade para capacidade_real(final)
+                idx_mask = find(mask2(user,:));
+                real_capacity(user,idx_mask) = capacity(user,idx_mask);
             end
             
         end
