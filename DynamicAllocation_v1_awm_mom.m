@@ -20,7 +20,7 @@ end
 
 %%
 TargetSer = 1e-3;                           %% SER Alvo
-SNR = 8:2:30;                               %% XXX
+SNR = 10:2:40;                               %% XXX
 %N = 6336;                                  %% Numero de Subportadoras
 b = zeros(1,N);                             %% Vetor de Bits das portadoras / Numerologia 3
 Total_bits = zeros(1,length(SNR));          %% Total de bits em um simbolo
@@ -160,11 +160,15 @@ else
      SimData=load('staticAllocation_num3.mat');
      D1 = SimData.Sim.DataSNR;
      D2 = SimData.Sim.DataBPRB;
+     % loading dynamic max vazao
+     DynamicData=load('dynamicMaxVazao_num3.mat');
+     D3 = DynamicData.Dynamic.DataSNR;
+     D4 = DynamicData.Dynamic.DataBPRB;
 end  
 
 %% Gera graficos de Bits/SNR
 figure;
-plot(SNR, bits_per_rb, '-o');
+plot(SNR, bits_per_rb, '-ok','LineWidth',1.5);
 %title('Alocação de Recursos em sistema de multiplo acesso Ortogonal');
 xlabel('SNR [dB]'); 
 ylabel('Bits/RB'); 
@@ -172,5 +176,7 @@ grid on;
 grid minor;
 
 hold on;
-plot(D1, D2, '-or');
-legend('Alocação Dinâmica','Alocação Estática')
+plot(D1, D2, '--r');
+hold on;
+plot(D3, D4, '--b');
+legend('Alocação Dinâmica','Alocação Estática', 'Dinamica - Máx. Vazão')

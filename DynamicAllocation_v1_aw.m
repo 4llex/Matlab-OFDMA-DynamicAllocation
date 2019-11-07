@@ -18,7 +18,7 @@ end
 
 %%
 TargetSer = 1e-3;                           %% SER Alvo
-SNR = 6:2:30;                               %% XXX
+SNR = 10:2:40;                               %% XXX
 %N = 6336;                                  %% Numero de Subportadoras
 b = zeros(1,N);                             %% Vetor de Bits das portadoras / Numerologia 3
 Total_bits = zeros(1,length(SNR));          %% Total de bits em um simbolo
@@ -47,7 +47,7 @@ mask = zeros(nusers,RB);
 capacity = zeros(nusers,RB);
 
 
-num_itr = 200;
+num_itr = 3000;
 for i=1:length(SNR)
     i
     j=0;
@@ -115,6 +115,11 @@ else
      D1 = SimData.Sim.DataSNR;
      D2 = SimData.Sim.DataBPRB;
 end  
+%% 
+Dynamic.DataSNR = SNR;   
+Dynamic.DataBPRB = bits_per_rb;
+FileName = strcat('C:\Users\alexrosa\Documents\MATLAB\DynamicAllocation\dynamicMaxVazao_num3.mat'); 
+save(FileName,'Dynamic');
 
 %% Gera graficos de Bits/SNR
 figure;
@@ -127,4 +132,4 @@ grid minor;
 
 hold on;
 plot(D1, D2, '-or');
-legend('Alocação Dinâmica','Alocação Estática')
+legend('Alocação Dinâmica - Máxima Vazão','Alocação Estática')
