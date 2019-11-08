@@ -1,8 +1,9 @@
 %%% Simulação de alocação estatica de usuarios em simbolo OFDM
 %%% OFDMA with static allocation
 
-%% Water Filing Modificado para MOM, maxima ondem de modulação: 
-%  cada subportadora sobressalente é alocada para o usuario que pode
+%% Water Filing Modificado para MOM, Tese do Anderson:
+%  A prioridade é calculada de acordo com o bmin de cada usuário.
+%  A subportadora sobressalente é alocada para o usuario que pode
 %  atingir a maior quantidade de bits!
 
 %% Define Numerology
@@ -63,7 +64,8 @@ for i=1:length(SNR)
     while j<num_itr 
         
         %bmin = [100, 100, 100];
-        bmin = [50, 50, 50];
+        %bmin = [50, 50, 50]; resultado de ontem - grafico no overleaf
+        bmin = [10, 10, 10];
         
         % Gera o canal randomico para cada user
         for user=1:nusers
@@ -168,7 +170,7 @@ end
 
 %% Gera graficos de Bits/SNR
 figure;
-plot(SNR, bits_per_rb, '-ok','LineWidth',1.5);
+plot(SNR, bits_per_rb, '-ok','LineWidth',1.2);
 %title('Alocação de Recursos em sistema de multiplo acesso Ortogonal');
 xlabel('SNR [dB]'); 
 ylabel('Bits/RB'); 
@@ -179,4 +181,4 @@ hold on;
 plot(D1, D2, '--r');
 hold on;
 plot(D3, D4, '--b');
-legend('Alocação Dinâmica','Alocação Estática', 'Dinamica - Máx. Vazão')
+legend('Water-filling Modificado - MOM','Alocação Estática', 'Dinamica - Máx. Vazão')
