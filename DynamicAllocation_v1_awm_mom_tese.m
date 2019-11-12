@@ -20,7 +20,7 @@ end
 
 %%
 TargetSer = 1e-3;                           %% SER Alvo
-SNR = 10:2:40;                               %% XXX
+SNR = 5:2:35;                               %% XXX
 %N = 6336;                                  %% Numero de Subportadoras
 b = zeros(1,N);                             %% Vetor de Bits das portadoras / Numerologia 3
 Total_bits = zeros(1,length(SNR));          %% Total de bits em um simbolo
@@ -55,7 +55,7 @@ bmax = zeros(1,nusers);
 %real_capacity = zeros(nusers,RB);
 %test = [];
 
-num_itr = 5000;
+num_itr = 3000;
 for i=1:length(SNR)
     i
     j=0;
@@ -64,7 +64,9 @@ for i=1:length(SNR)
         
         %bmin = [100, 100, 100];
         %bmin = [50, 50, 50]; resultado de ontem - grafico no overleaf
-        bmin = [10, 10, 10];
+        %bmin = [10, 10, 10];
+        %bmin = [28800, 28800, 28800];
+        bmin = [14400, 14400, 14400];
         
         % Gera o canal randomico para cada user
         for user=1:nusers
@@ -85,7 +87,7 @@ for i=1:length(SNR)
         for user=1:nusers
             [~,~, capacity(user,:) ] = fcn_waterfilling(Pu, P/(SNRLIN*RB), Gamma, H(user,:), mask(user,:) ); % a mask é tudo '1'!
             bmax(user) = sum(capacity(user,:));
-            capacity(user,:) = quantization(capacity(user,:));
+            capacity(user,:) = quantization(capacity(user,:),Numerology);
         end
         
         % -----------------------------------------------------------------
@@ -102,7 +104,7 @@ for i=1:length(SNR)
                 real_capacity(priority_user,index) = value;
                 capacity(:,index) = -1;
                 alloc_vec(index) = 1;
-                bmin(priority_user) = bmin(priority_user) - value;
+                bmin(priority_user) = bmin(priority_user) - (value*RE);
                 if(bmin(priority_user) <= 0)
                     bmin(priority_user) = 0;
                 end
@@ -159,9 +161,22 @@ else
      D4 = DynamicData.Dynamic.DataBPRB;
 end  
 
+%% Saving Vector Results in a File
+if (Numerology == 1)
+    DynamicMOM.DataSNR = SNR;   
+    DynamicMOM.DataBPRB = bits_per_rb;
+    FileName = strcat('C:\Users\alexrosa\Documents\MATLAB\DynamicAllocation\dynamic_mom_tese_num1.mat'); 
+    save(FileName,'Dynamic');
+else
+    DynamicMOM.DataSNR = SNR;   
+    DynamicMOM.DataBPRB = bits_per_rb;
+    FileName = strcat('C:\Users\alexrosa\Documents\MATLAB\DynamicAllocation\dynamic_mom_tese_num3.mat'); 
+    save(FileName,'Dynamic');
+end
+
 %% Gera graficos de Bits/SNR
 figure;
-plot(SNR, bits_per_rb, '-ok','LineWidth',1.2);
+plot(SNR, bits_per_rb, '-.k','LineWidth',1.1);
 %title('Alocação de Recursos em sistema de multiplo acesso Ortogonal');
 xlabel('SNR [dB]'); 
 ylabel('Bits/RB'); 

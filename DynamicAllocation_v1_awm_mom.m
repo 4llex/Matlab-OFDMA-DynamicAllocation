@@ -1,8 +1,8 @@
 %%% Simulação de alocação estatica de usuarios em simbolo OFDM
 %%% OFDMA with static allocation
 
-%% Water Filing Modificado para MOM, Tese do Anderson:
-%  A prioridade é calculada de acordo com o bmin de cada usuário.
+%% Water Filing Modificado para MOM, silde luciano:
+%  A prioridade é calculada de acordo com o bmax de cada usuário.
 %  A subportadora sobressalente é alocada para o usuario que pode
 %  atingir a maior quantidade de bits!
 
