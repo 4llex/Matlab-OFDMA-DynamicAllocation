@@ -55,7 +55,7 @@ bmax = zeros(1,nusers);
 %real_capacity = zeros(nusers,RB);
 %test = [];
 
-num_itr = 3000;
+num_itr = 4000;
 for i=1:length(SNR)
     i
     j=0;
@@ -150,7 +150,11 @@ end
 if (Numerology == 1)
      SimData=load('staticAllocation_num1.mat');
      D1 = SimData.Sim.DataSNR;
-     D2 = SimData.Sim.DataBPRB;  
+     D2 = SimData.Sim.DataBPRB;
+     % loading dynamic max vazao
+     DynamicData=load('dynamicMaxVazao_num1.mat');
+     D3 = DynamicData.Dynamic.DataSNR;
+     D4 = DynamicData.Dynamic.DataBPRB;
 else     
      SimData=load('staticAllocation_num3.mat');
      D1 = SimData.Sim.DataSNR;
@@ -166,12 +170,12 @@ if (Numerology == 1)
     DynamicMOM.DataSNR = SNR;   
     DynamicMOM.DataBPRB = bits_per_rb;
     FileName = strcat('C:\Users\alexrosa\Documents\MATLAB\DynamicAllocation\dynamic_mom_tese_num1.mat'); 
-    save(FileName,'Dynamic');
+    save(FileName,'DynamicMOM');
 else
     DynamicMOM.DataSNR = SNR;   
     DynamicMOM.DataBPRB = bits_per_rb;
     FileName = strcat('C:\Users\alexrosa\Documents\MATLAB\DynamicAllocation\dynamic_mom_tese_num3.mat'); 
-    save(FileName,'Dynamic');
+    save(FileName,'DynamicMOM');
 end
 
 %% Gera graficos de Bits/SNR
