@@ -1,13 +1,14 @@
-%%% Simulação de alocação estatica de usuarios em simbolo OFDM
-%%% OFDMA with static allocation
+%%% Simulação de alocação dinamica de usuarios em simbolo OFDM
+%%% OFDMA with dynamic allocation - AWM-MV_MOM - Slide Luciano
 
-%% Water Filing Modificado para MOM, silde luciano:
+%% Water Filing Modificado para MOM, SLIDE Luciano:
 %  A prioridade é calculada de acordo com o bmax de cada usuário.
 %  A subportadora sobressalente é alocada para o usuario que pode
 %  atingir a maior quantidade de bits!
 
 %% Define Numerology
-Numerology = 3;
+Numerology = 1
+;
 
 if (Numerology == 1)
      N = 6336;
@@ -21,7 +22,7 @@ end
 
 %%
 TargetSer = 1e-3;                           %% SER Alvo
-SNR = 10:2:40;                               %% XXX
+SNR = 5:2:35;                               %% XXX
 %N = 6336;                                  %% Numero de Subportadoras
 b = zeros(1,N);                             %% Vetor de Bits das portadoras / Numerologia 3
 Total_bits = zeros(1,length(SNR));          %% Total de bits em um simbolo
@@ -56,7 +57,7 @@ bmax = zeros(1,nusers);
 %real_capacity = zeros(nusers,RB);
 %test = [];
 
-num_itr = 5000;
+num_itr = 1000;
 for i=1:length(SNR)
     i
     j=0;
@@ -65,7 +66,9 @@ for i=1:length(SNR)
         
         %bmin = [100, 100, 100];
         %bmin = [50, 50, 50]; resultado de ontem - grafico no overleaf
-        bmin = [10, 10, 10];
+        %bmin = [10, 10, 10];
+        %bmin = [28800, 28800, 28800];
+        bmin = [14400, 14400, 14400];
         
         % Gera o canal randomico para cada user
         for user=1:nusers
@@ -75,6 +78,8 @@ for i=1:length(SNR)
             H(user,:) = rb_h_media(Hf, sc_per_rb);
         end
         
+        % Converte SNRdB para SNRlin
+        % define a potencia para os usuários
         SNRLIN = 10^(SNR(i)/10);
         P  = 20;
         Pu = P/nusers;
@@ -84,7 +89,7 @@ for i=1:length(SNR)
         for user=1:nusers
             [~,~, capacity(user,:) ] = fcn_waterfilling(Pu, P/(SNRLIN*RB), Gamma, H(user,:), mask(user,:) ); % a mask é tudo '1'!
             bmax(user) = sum(capacity(user,:));
-            capacity(user,:) = quantization(capacity(user,:));
+            capacity(user,:) = quantization(capacity(user,:),Numerology);
         end
         
         % Gettting priority users
@@ -94,12 +99,11 @@ for i=1:length(SNR)
             bmax(index) = -1;
         end
         
-        
+        %% ----------------------------------------------------------------
         priority_user;
         alloc_vec = zeros(1, RB);
         alloc_user = zeros(1, RB);
         real_capacity = zeros(nusers,RB);
-        
         while (sum(bmin<=0) ~= nusers)
             
                 if(sum(alloc_vec)==132)
@@ -113,12 +117,12 @@ for i=1:length(SNR)
                            alloc_vec(index) = 1;
                            alloc_user(index) = ii;
                            %test = [test,index];
-                           bmin(priority_user(ii)) = bmin(priority_user(ii)) - value;
+                           bmin(priority_user(ii)) = bmin(priority_user(ii)) - (value*RE);
                         end
-                    end % end do for
+                    end
                 end
-        end % end while 
-        
+        end  
+        %% ----------------------------------------------------------------
         % Verifica se há portadoras sobressalentes e aloca cada uma para o 
         % usuario que pode transmitir a maior taxa de bits!
         mask2 = zeros(nusers,RB); % mask para melhor user por portadora
@@ -157,7 +161,11 @@ end
 if (Numerology == 1)
      SimData=load('staticAllocation_num1.mat');
      D1 = SimData.Sim.DataSNR;
-     D2 = SimData.Sim.DataBPRB;  
+     D2 = SimData.Sim.DataBPRB; 
+     % loading dynamic max vazao
+     DynamicData=load('dynamicMaxVazao_num1.mat');
+     D3 = DynamicData.Dynamic.DataSNR;
+     D4 = DynamicData.Dynamic.DataBPRB;
 else     
      SimData=load('staticAllocation_num3.mat');
      D1 = SimData.Sim.DataSNR;
@@ -167,6 +175,18 @@ else
      D3 = DynamicData.Dynamic.DataSNR;
      D4 = DynamicData.Dynamic.DataBPRB;
 end  
+%% Saving Vector Results in a File
+if (Numerology == 1)
+    DynamicMOM.DataSNR = SNR;   
+    DynamicMOM.DataBPRB = bits_per_rb;
+    FileName = strcat('C:\Users\alexrosa\Documents\MATLAB\DynamicAllocation\dynamic_mom_tese_num1.mat'); 
+    save(FileName,'DynamicMOM');
+else
+    DynamicMOM.DataSNR = SNR;   
+    DynamicMOM.DataBPRB = bits_per_rb;
+    FileName = strcat('C:\Users\alexrosa\Documents\MATLAB\DynamicAllocation\dynamic_mom_tese_num3.mat'); 
+    save(FileName,'DynamicMOM');
+end
 
 %% Gera graficos de Bits/SNR
 figure;

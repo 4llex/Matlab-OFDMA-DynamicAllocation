@@ -1,5 +1,5 @@
-%%% Simulação de alocação estatica de usuarios em simbolo OFDM
-%%% OFDMA with static allocation
+%%% Simulação de alocação dinamica de usuarios em simbolo OFDM
+%%% OFDMA with dynamic allocation - Water-filling maxima vazao do sistema
 
 %% Water Filing para Maxima vazao do sistema
 

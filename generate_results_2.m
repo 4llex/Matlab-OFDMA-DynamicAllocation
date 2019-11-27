@@ -1,6 +1,6 @@
 % Script para gerar os resultados das simulações 
 % das numerologias 1 e 3 utilizando as tecnicas de alocação
-% Estatica e Dinamica para Máxima Vazão
+% Estatica - Dinamica para Máxima Vazão - e, AWM/MOM
 
 %% Loading Results
 

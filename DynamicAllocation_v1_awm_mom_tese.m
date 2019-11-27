@@ -1,7 +1,9 @@
-%%% Simulação de alocação estatica de usuarios em simbolo OFDM
-%%% OFDMA with static allocation
+%%% Simulação de alocação dinamica de usuarios em simbolo OFDM
+%%% OFDMA with dynamic allocation - AWM-MV_MOM - tese do Anderson
 
 %% Water Filing Modificado para MOM, maxima ondem de modulação: 
+%  A prioridade de cada usuario é definido pelo que tem o maior Bmin
+%  de agordo com o fluxograma do Anderson!
 %  cada subportadora sobressalente é alocada para o usuario que pode
 %  atingir a maior quantidade de bits!
 
@@ -90,7 +92,7 @@ for i=1:length(SNR)
             capacity(user,:) = quantization(capacity(user,:),Numerology);
         end
         
-        % -----------------------------------------------------------------
+        %% ----------------------------------------------------------------
         alloc_vec = zeros(1, RB);
         alloc_user = zeros(1, RB);
         real_capacity = zeros(nusers,RB);
@@ -111,7 +113,7 @@ for i=1:length(SNR)
             end
  
         end
-        % -----------------------------------------------------------------
+        %% ----------------------------------------------------------------
         % Verifica se há portadoras sobressalentes e aloca cada uma para o 
         % usuario que pode transmitir a maior taxa de bits! MOM
         mask2 = zeros(nusers,RB); % mask para melhor user por portadora
