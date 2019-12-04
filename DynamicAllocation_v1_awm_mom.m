@@ -7,8 +7,7 @@
 %  atingir a maior quantidade de bits!
 
 %% Define Numerology
-Numerology = 1
-;
+Numerology = 3;
 
 if (Numerology == 1)
      N = 6336;
@@ -57,7 +56,7 @@ bmax = zeros(1,nusers);
 %real_capacity = zeros(nusers,RB);
 %test = [];
 
-num_itr = 1000;
+num_itr = 3000;
 for i=1:length(SNR)
     i
     j=0;
