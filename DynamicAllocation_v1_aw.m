@@ -47,7 +47,7 @@ mask = zeros(nusers,RB);
 capacity = zeros(nusers,RB);
 
 
-num_itr = 5000;
+num_itr = 3000;
 for i=1:length(SNR)
     i
     j=0;

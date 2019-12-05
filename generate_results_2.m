@@ -52,7 +52,7 @@ plot(DA1, DA2, '-.b*');
 
 plot(AWM1, AWM2, '-.ko');
 
-lgd0 = legend('Alocação Estática','Alocação Dinâmica', 'AWM-MOM');
+lgd0 = legend('Alocação Estática','Alocação Dinâmica/Máx. Vazão', 'Aloc. Dinâmica/AWM-MOM');
 lgd0.FontSize = 10;
 %% Gera graficos IoT
 figure;
@@ -70,5 +70,5 @@ plot(DA3, DA4, '-.b*');
 
 plot(AWM3, AWM4, '-.ko');
 
-lgd = legend('Alocação Estática','Alocação Dinâmica', 'AWM-MOM');
+lgd = legend('Alocação Estática','Aloc. Dinâmica/Máx. Vazão', 'Aloc. Dinâmica/AWM-MOM');
 lgd.FontSize = 10;
